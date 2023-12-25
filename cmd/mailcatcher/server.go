@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"regexp"
 	"fmt"
 	gosmtp "github.com/emersion/go-smtp"
 	"github.com/veqryn/go-email/email"
@@ -59,9 +60,35 @@ func (s *Session) Data(r io.Reader) error {
 			log.Fatal("error", err)
 			return err
 		} else {
-			msg.Header.SetSubject(fmt.Sprintf("[MAILCATCHER] %s", msg.Header.Subject()))
-			msg.Header.SetTo(fmt.Sprintf("\"%s\" <%s>", msg.Header.To()[0], config.MC_REDIRECT_TO))
-			msg.Header.SetFrom(fmt.Sprintf("\"%s\" <%s>", "MAILCATCHER", config.MC_SENDER_MAIL))
+			justPrefixREA := regexp.MustCompile("> *$")
+			justPrefixREB := regexp.MustCompile("^.*<")
+			justPrefixREC := regexp.MustCompile("@.*")
+			toField := msg.Header.To()[0]
+			toField = justPrefixREA.ReplaceAllString(toField, "")
+			toField = justPrefixREB.ReplaceAllString(toField, "")
+			toField = justPrefixREC.ReplaceAllString(toField, "")
+
+			msg.Header.SetSubject(fmt.Sprintf("🧤 %s - %s", toField, msg.Header.Subject()))
+
+			// msg.Header.SetSubject(fmt.Sprintf("🧤 %s - %s",
+			// 	justPrefixREC.ReplaceAllString(
+			// 		justPrefixREB.ReplaceAllString(
+			// 			justPrefixREA.ReplaceAllString(
+			// 				msg.Header.To()[0],
+			// 				""),""),""),
+			// 	msg.Header.Subject()))
+
+			noBrackets := regexp.MustCompile("[<>]")
+
+			msg.Header.SetTo(fmt.Sprintf("\"%s\" <%s>",
+				noBrackets.ReplaceAllString(msg.Header.To()[0], "%"),
+				config.MC_REDIRECT_TO))
+			msg.Header.SetFrom(fmt.Sprintf("\"%s\" <%s>", "mailcatch", config.MC_SENDER_MAIL))
+
+			/*
+			msg.Header.SetTo("mainEmail@gmail")
+			msg.Header.SetFrom("smtpEmail@gmail")
+			*/
 
 			sendMail(msg)
 
