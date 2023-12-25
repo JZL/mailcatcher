@@ -1,4 +1,4 @@
-![Build](https://github.com/0xERR0R/mailcatcher/workflows/Build/badge.svg)
+![Build](https://github.com/jzl/mailcatcher/workflows/Build/badge.svg)
 
 # mailcatcher
 
