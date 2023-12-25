@@ -1,0 +1,9 @@
+sudo docker build -t groot .
+sudo docker-compose up -d
+
+sudo docker image prune -a
+
+sudo su
+docker logs `docker ps|tail -n1 |awk '{print $1}'` -f
+
+nix-shell -p go --command "go get ./..."
