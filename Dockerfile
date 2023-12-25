@@ -3,7 +3,9 @@ FROM golang:1-alpine AS builder
 #RUN apk --no-cache add gcc
 RUN apk --no-cache add build-base
 
+# Doesn't actually copy just mimics -- chatGPT
 WORKDIR ${GOPATH}/src/github.com/0xERR0R/mailcatcher
+# Can recalculate go.sum with `nix-shell -p go --command "go get ./..."`
 COPY go.mod go.sum ./
 RUN go mod download
 
