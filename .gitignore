@@ -1,3 +1,5 @@
+# Where storing password
+env_file
 vendor/
 .idea/
 
